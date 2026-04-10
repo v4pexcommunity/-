@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V4PEX | Performance & Otimização PRO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;800&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #8a2be2;
+            --primary-glow: rgba(138, 43, 226, 0.6);
+            --bg-dark: #050505;
+            --card-bg: rgba(17, 17, 17, 0.8);
+            --text-main: #ffffff;
+            --text-dim: #b0b0b0;
+            --success: #00ff88;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+
+        body { background: var(--bg-dark); color: var(--text-main); overflow-x: hidden; }
+
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+
+        header {
+            position: absolute;
+            width: 100%; top: 0; z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 30px 8%;
+        }
+
+        .logo { font-family: 'Orbitron'; font-size: 1.2rem; font-weight: 800; color: #fff; letter-spacing: 2px; }
+
+        .hero {
+            height: 100vh;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center;
+            padding: 0 10%;
+            background: radial-gradient(circle, rgba(138, 43, 226, 0.05) 0%, transparent 70%);
+        }
+
+        .hero h1 {
+            font-family: 'Inter';
+            font-weight: 800; font-size: clamp(1.8rem, 5vw, 3.5rem);
+            text-transform: uppercase; letter-spacing: -1px; margin-bottom: 15px;
+            filter: drop-shadow(0 0 15px var(--primary-glow));
+        }
+
+        .hero p {
+            color: var(--text-dim);
+            max-width: 700px; font-size: 0.95rem;
+            line-height: 1.6; margin-bottom: 40px;
+        }
+
+        .btn {
+            padding: 16px 35px;
+            font-size: 0.8rem; font-weight: 700; border-radius: 8px;
+            border: none; cursor: pointer; transition: 0.3s;
+            background: #8257e5; color: white; text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(130, 87, 229, 0.4);
+        }
+
+        .btn:hover { transform: scale(1.05); background: #9466ff; }
+
+        .methodology {
+            display: flex;
+            justify-content: center; gap: 20px;
+            padding: 100px 8% 50px; flex-wrap: wrap;
+        }
+
+        .meth-card {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 50px 30px; border-radius: 20px;
+            border: 1px solid rgba(138, 43, 226, 0.1); text-align: center;
+            flex: 1; min-width: 300px; max-width: 400px;
+            backdrop-filter: blur(10px);
+        }
+
+        .icon-box {
+            width: 60px;
+            height: 60px; background: rgba(138, 43, 226, 0.1);
+            border-radius: 15px; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 25px;
+            color: var(--primary);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.1);
+        }
+
+        .icon-box svg { width: 30px; height: 30px; filter: drop-shadow(0 0 5px var(--primary)); }
+
+        .meth-card h4 { font-size: 1.2rem; margin-bottom: 15px; }
+        .meth-card p { font-size: 0.9rem; color: var(--text-dim); line-height: 1.5; }
+
+        /* Planos */
+        .plans-container {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            gap: 30px;
+            padding: 80px 8%;
+            flex-wrap: wrap;
+        }
+
+        .plan-card {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(138, 43, 226, 0.2);
+            border-radius: 24px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 380px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .plan-card.recommended {
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.2);
+            transform: scale(1.05);
+        }
+
+        .badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 5px 20px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .plan-name {
+            font-family: 'Orbitron';
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            margin-bottom: 25px;
+            text-transform: uppercase;
+        }
+
+        .old-price { color: #ff4d4d; text-decoration: line-through; font-size: 0.9rem; margin-bottom: 5px; }
+
+        .current-price { font-size: 2.5rem; font-weight: 800; margin-bottom: 5px; }
+        .current-price span { font-size: 1rem; vertical-align: super; margin-left: 2px; }
+
+        .discount-tag { color: var(--success); font-size: 0.8rem; font-weight: 700; margin-bottom: 30px; text-transform: uppercase; }
+
+        .plan-list { list-style: none; margin: 30px 0; }
+        .plan-list li { margin: 12px 0; color: var(--text-dim); display: flex; align-items: center; font-size: 0.9rem; }
+        
+        .plan-btn {
+            margin-top: auto;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; }
+        .btn-outline:hover { background: rgba(255,255,255,0.05); }
+
+        .btn-full { background: var(--primary); border: none; color: white; box-shadow: 0 10px 20px rgba(138, 43, 226, 0.3); }
+        .btn-full:hover { background: #9466ff; }
+
+        /* Prova Social */
+        .social-proof { padding: 80px 8%; text-align: center; }
+        .social-proof h2 { font-family: 'Orbitron'; margin-bottom: 50px; font-size: 1.8rem; color: var(--primary); }
+        .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+        .testimonial-card {
+            background: rgba(255, 255, 255, 0.03); padding: 30px; border-radius: 15px;
+            border: 1px solid rgba(138, 43, 226, 0.1); text-align: left; transition: 0.3s;
+        }
+        .testimonial-card:hover { border-color: var(--primary); transform: translateY(-5px); }
+        .user-info { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .user-avatar { width: 45px; height: 45px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .stars { color: #ffcc00; font-size: 0.9rem; margin-bottom: 10px; }
+        .testimonial-text { font-size: 0.9rem; color: var(--text-dim); font-style: italic; }
+
+        /* FAQ */
+        .faq-section { padding: 80px 8%; max-width: 900px; margin: 0 auto; }
+        .faq-section h2 { font-family: 'Orbitron'; text-align: center; margin-bottom: 40px; font-size: 1.8rem; }
+        .faq-item { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 10px; border-radius: 8px; overflow: hidden; }
+        .faq-question { padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; transition: 0.3s; }
+        .faq-question:hover { background: rgba(138, 43, 226, 0.05); }
+        .faq-answer { padding: 0 20px; max-height: 0; overflow: hidden; transition: 0.3s ease-out; color: var(--text-dim); font-size: 0.9rem; line-height: 1.6; }
+        .faq-item.active .faq-answer { padding: 0 20px 20px 20px; max-height: 200px; }
+        .faq-item.active .faq-question { color: var(--primary); }
+
+        footer {
+            padding: 40px 8%;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<header>
+    <div class="logo">V4PEX</div>
+    <div style="color: #00ff88; font-size: 0.7rem; font-weight: 600; letter-spacing: 1px;">● AULAS DISPONÍVEIS</div>
+</header>
+
+<section class="hero">
+    <h1>APRENDA A OTIMIZAR SEU PC COMO UM PROFISSIONAL</h1>
+    <p>A engenharia definitiva em performance. Videoaulas passo a passo desenvolvidas para entregar a menor latência e extrair o potencial máximo do seu computador com total segurança.</p>
+    <button class="btn" onclick="document.getElementById('planos').scrollIntoView({behavior:'smooth'})">VER CONTEÚDO DAS AULAS</button>
+</section>
+
+<section class="methodology">
+    <div class="meth-card">
+        <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></div>
+        <h4>Videoaulas Práticas</h4>
+        <p>Aulas diretas ao ponto mostrando a tela do PC e cada configuração necessária.</p>
+    </div>
+    <div class="meth-card">
+        <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
+        <h4>Segurança Absoluta</h4>
+        <p>Métodos validados que otimizam sem comprometer a integridade do Windows.</p>
+    </div>
+    <div class="meth-card">
+        <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polyline></svg></div>
+        <h4>Acesso Vitalício</h4>
+        <p>Estude no seu ritmo e tenha acesso a todas as futuras atualizações do curso.</p>
+    </div>
+</section>
+
+<section id="planos" class="plans-container">
+    <div class="plan-card">
+        <h3 class="plan-name">Treinamento Essential</h3>
+        <div class="old-price">R$ 97,00</div>
+        <div class="current-price">R$ 54<span>,90</span></div>
+        <div class="discount-tag">43% de Desconto</div>
+        <ul class="plan-list">
+            <li> Videoaula inclusa com os seguintes conteúdos:</li>
+            <li style="display:flex;align-items:center;gap:6px;"><span style="color:#22c55e;">✔</span><strong>Máximo Desempenho do Sistema</strong></li>
+            <li style="display:flex;align-items:center;gap:6px;"><span style="color:#22c55e;">✔</span><strong>Drivers de Alta Performance</strong></li>
+            <li style="display:flex;align-items:center;gap:6px;"><span style="color:#22c55e;">✔</span><strong>Ajustes de SSD e Energia</strong></li>
+            <li style="display:flex;align-items:center;gap:6px;"><span style="color:#22c55e;">✔</span><strong>Limpeza do Sistema</strong></li>
+        </ul>
+        <button class="plan-btn btn-outline" onclick="window.open('SEU_LINK_AQUI', '_blank')">COMPRAR AGORA</button>
+    </div>
+
+    <div class="plan-card recommended">
+        <div class="badge">Recomendado</div>
+        <h3 class="plan-name">Masterclass Pro</h3>
+        <div class="old-price">R$ 149,00</div>
+        <div class="current-price">R$ 84<span>,90</span></div>
+        <div class="discount-tag">43% de Desconto</div>
+        <ul class="plan-list">
+            <li> Videoaula inclusa com os seguintes conteúdos:</li>
+            <li style="display:flex;align-items:center;gap:6px;"><span style="color:#22c55e;">✔</span><strong>Tudo do Essential +</strong></li>
+            <li style="display:flex;align-items:center;gap:6px;"><span style="color:#22c55e;">✔</span><strong>FPS Extra em PCs Fracos</strong></li>
+            <li style="display:flex;align-items:center;gap:6px;"><span style="color:#22c55e;">✔</span><strong>Configuração de Regedit</strong></li>
+            <li style="display:flex;align-items:center;gap:6px;"><span style="color:#22c55e;">✔</span><strong>Redução de Input Lag</strong></li>
+            <li><span style="color:#a855f7; font-weight:bold;">BÔNUS:</span> Software de Estabilidade</li>
+        </ul>
+        <button class="plan-btn btn-full" onclick="window.open('SEU_LINK_AQUI', '_blank')">GARANTIR ACESSO PRO</button>
+    </div>
+</section>
+
+<section class="social-proof">
+    <h2>RESULTADOS REAIS</h2>
+    <div class="testimonials-grid">
+        <div class="testimonial-card">
+            <div class="user-info"><div class="user-avatar">JD</div><div><strong>João Duarte</strong><br><small>Player de Valorant</small></div></div>
+            <div class="stars">★★★★★</div>
+            <p class="testimonial-text">"O meu input lag desapareceu. O jogo parece muito mais fluido agora, recomendo o Masterclass Pro!"</p>
+        </div>
+        <div class="testimonial-card">
+            <div class="user-info"><div class="user-avatar">ML</div><div><strong>Mateus Lima</strong><br><small>Streamer</small></div></div>
+            <div class="stars">★★★★★</div>
+            <p class="testimonial-text">"Ganhei cerca de 40 FPS estáveis no Warzone. As aulas são muito bem explicadas e seguras."</p>
+        </div>
+        <div class="testimonial-card">
+            <div class="user-info"><div class="user-avatar">RA</div><div><strong>Ricardo A.</strong><br><small>Editor de Vídeo</small></div></div>
+            <div class="stars">★★★★★</div>
+            <p class="testimonial-text">"O sistema como um todo ficou muito mais responsivo. Excelente investimento."</p>
+        </div>
+    </div>
+</section>
+
+<section class="faq-section">
+    <h2>DÚVIDAS FREQUENTES</h2>
+    <div class="faq-item">
+        <div class="faq-question">O processo é seguro para o meu PC? <span>+</span></div>
+        <div class="faq-answer">Sim! Utilizamos métodos testados que não forçam o hardware acima do limite e não causam instabilidade no Windows.</div>
+    </div>
+    <div class="faq-item">
+        <div class="faq-question">Preciso de formatar o computador? <span>+</span></div>
+        <div class="faq-answer">Não é necessário. As nossas técnicas aplicam-se ao sistema atual, embora ensinemos como fazer uma instalação limpa.</div>
+    </div>
+    <div class="faq-item">
+        <div class="faq-question">Dá ban em jogos online (Anti-cheats)? <span>+</span></div>
+        <div class="faq-answer">Absolutamente não. As otimizações são ao nível do sistema operativo, sendo 100% permitidas em qualquer jogo.</div>
+    </div>
+</section>
+
+<footer>
+    <p>&copy; <span id="year"></span> V4PEX. Todos os direitos reservados.</p>
+</footer>
+
+<script>
+    const canvas = document.getElementById("bg-canvas");
+    const ctx = canvas.getContext("2d");
+    let particles = [];
+    const maxDist = 120;
+
+    document.getElementById("year").innerHTML = new Date().getFullYear();
+
+    function init() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        particles = [];
+        for(let i=0; i<80; i++) {
+            particles.push({
+                x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+                vx: (Math.random()-0.5)*0.5, vy: (Math.random()-0.5)*0.5
+            });
+        }
+    }
+
+    function draw() {
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+        ctx.strokeStyle = "rgba(138, 43, 226, 0.15)";
+        ctx.fillStyle = "rgba(138, 43, 226, 0.3)";
+        for(let i=0; i<particles.length; i++) {
+            let p = particles[i];
+            p.x += p.vx; p.y += p.vy;
+            if(p.x<0 || p.x>canvas.width) p.vx*=-1;
+            if(p.y<0 || p.y>canvas.height) p.vy*=-1;
+            ctx.beginPath(); ctx.arc(p.x, p.y, 1.5, 0, Math.PI*2); ctx.fill();
+            for(let j=i+1; j<particles.length; j++) {
+                let p2 = particles[j];
+                let dist = Math.hypot(p.x-p2.x, p.y-p2.y);
+                if(dist < maxDist) {
+                    ctx.globalAlpha = 1 - (dist/maxDist);
+                    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+                }
+            }
+            ctx.globalAlpha = 1;
+        }
+        requestAnimationFrame(draw);
+    }
+
+    // Lógica do FAQ
+    document.querySelectorAll('.faq-question').forEach(question => {
+        question.addEventListener('click', () => {
+            const item = question.parentElement;
+            item.classList.toggle('active');
+            document.querySelectorAll('.faq-item').forEach(otherItem => {
+                if (otherItem !== item) otherItem.classList.remove('active');
+            });
+        });
+    });
+
+    window.addEventListener('resize', init);
+    init(); draw();
+</script>
+
+</body>
+</html>
